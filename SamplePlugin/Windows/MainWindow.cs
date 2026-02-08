@@ -1,9 +1,12 @@
-﻿using System;
+using System;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Textures;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
+using Dalamud.Plugin.Ipc.Exceptions;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.Sheets;
 
 namespace SamplePlugin.Windows;
@@ -95,6 +98,58 @@ public class MainWindow : Window, IDisposable
                 else
                 {
                     ImGui.Text("Invalid territory.");
+                }
+
+                var escSheet = Plugin.DataManager.GetExcelSheet<EquipSlotCategory>();
+
+                foreach (var item in Plugin.DataManager.GetExcelSheet<Item>())
+                {
+                    if (item.LevelEquip != 100)
+                    {
+                        continue;
+                    }
+
+                    var escRowId = item.EquipSlotCategory.RowId;
+                    EquipSlotCategory? esc = null;
+                    if (escRowId != 0 && escSheet != null)
+                    {
+                        esc = escSheet.GetRow(escRowId);
+                    }
+
+                    ImGui.TextUnformatted(
+                        esc != null
+                        ? $"{item.RowId}: {item.Name} | EquipSlotCategory Row={escRowId}"
+                        : $"{item.RowId}: {item.Name} | EquipSlotCategory Row={escRowId} (null)"
+                    );
+                    ImGui.SameLine();
+
+                    ImGui.PushID((int)item.RowId);
+
+                    var lookup = new GameIconLookup { IconId = (uint) item.Icon };
+                    var shared = Plugin.TextureProvider.GetFromGameIcon(lookup);
+
+                    if (shared.TryGetWrap(out var wrap, out _) && wrap != null)
+                    {
+                        ImGui.Image(wrap.Handle, wrap.Size);
+                        ImGui.SameLine();
+                    }
+
+                    ImGui.TextUnformatted($"{item.RowId}: {item.Name}");
+                    ImGui.SameLine();
+
+                    if (ImGui.SmallButton("Try On"))
+                    {
+                        AgentTryon.TryOn(
+                            openerAddonId: 0,
+                            itemId: (uint)item.RowId,
+                            stain0Id: 0,
+                            stain1Id: 0,
+                            glamourItemId: 0,
+                            applyCompanyCrest: false
+                        );
+                    }
+
+                    ImGui.PopID();
                 }
             }
         }
