@@ -19,7 +19,7 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
 
     // Storing an instance of lister here in Plugin class to acquire it elsewhere.
-    public static OutfitLister OutfitLister { get; private set; } = null!;
+    public static BundleCreater BundleCreater { get; private set; } = null!;
 
     private const string CommandName = "/pmycommand";
 
@@ -62,7 +62,8 @@ public sealed class Plugin : IDalamudPlugin
         // Example Output: 00:57:54.959 | INF | [SamplePlugin] ===A cool log message from Sample Plugin===
         Log.Information($"===A cool log message from {PluginInterface.Manifest.Name}===");
 
-        OutfitLister = new OutfitLister(DataManager);
+        BundleCreater = new BundleCreater(DataManager);
+        BundleCreater.FilterBundle();
     }
 
     public void Dispose()

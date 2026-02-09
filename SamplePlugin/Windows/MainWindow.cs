@@ -100,56 +100,38 @@ public class MainWindow : Window, IDisposable
                     ImGui.Text("Invalid territory.");
                 }
 
-                var escSheet = Plugin.DataManager.GetExcelSheet<EquipSlotCategory>();
-
-                foreach (var item in Plugin.DataManager.GetExcelSheet<Item>())
+                foreach (Bundle b in Plugin.BundleCreater.bundles)
                 {
-                    if (item.LevelEquip != 100)
+                    foreach (Item i in b.ItemBundle)
                     {
-                        continue;
-                    }
+                        ImGui.PushID((int)i.RowId);
 
-                    var escRowId = item.EquipSlotCategory.RowId;
-                    EquipSlotCategory? esc = null;
-                    if (escRowId != 0 && escSheet != null)
-                    {
-                        esc = escSheet.GetRow(escRowId);
-                    }
+                        var lookup = new GameIconLookup { IconId = (uint)i.Icon };
+                        var shared = Plugin.TextureProvider.GetFromGameIcon(lookup);
 
-                    ImGui.TextUnformatted(
-                        esc != null
-                        ? $"{item.RowId}: {item.Name} | EquipSlotCategory Row={escRowId}"
-                        : $"{item.RowId}: {item.Name} | EquipSlotCategory Row={escRowId} (null)"
-                    );
-                    ImGui.SameLine();
+                        if (shared.TryGetWrap(out var wrap, out _) && wrap != null)
+                        {
+                            ImGui.Image(wrap.Handle, wrap.Size);
+                            ImGui.SameLine();
+                        }
 
-                    ImGui.PushID((int)item.RowId);
-
-                    var lookup = new GameIconLookup { IconId = (uint) item.Icon };
-                    var shared = Plugin.TextureProvider.GetFromGameIcon(lookup);
-
-                    if (shared.TryGetWrap(out var wrap, out _) && wrap != null)
-                    {
-                        ImGui.Image(wrap.Handle, wrap.Size);
+                        ImGui.TextUnformatted($"{i.RowId}: {i.Name}");
                         ImGui.SameLine();
+
+                        if (ImGui.SmallButton("Try On"))
+                        {
+                            AgentTryon.TryOn(
+                                openerAddonId: 0,
+                                itemId: (uint)i.RowId,
+                                stain0Id: 0,
+                                stain1Id: 0,
+                                glamourItemId: 0,
+                                applyCompanyCrest: false
+                            );
+                        }
+
+                        ImGui.PopID();
                     }
-
-                    ImGui.TextUnformatted($"{item.RowId}: {item.Name}");
-                    ImGui.SameLine();
-
-                    if (ImGui.SmallButton("Try On"))
-                    {
-                        AgentTryon.TryOn(
-                            openerAddonId: 0,
-                            itemId: (uint)item.RowId,
-                            stain0Id: 0,
-                            stain1Id: 0,
-                            glamourItemId: 0,
-                            applyCompanyCrest: false
-                        );
-                    }
-
-                    ImGui.PopID();
                 }
             }
         }
