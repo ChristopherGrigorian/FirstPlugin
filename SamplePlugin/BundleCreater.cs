@@ -29,8 +29,10 @@ public sealed class BundleCreater
         var cjcSheet = Plugin.DataManager.GetExcelSheet<ClassJobCategory>();
 
         int loopConstraint = 0;
-
         Bundle bundle = new Bundle();
+
+        uint previousID = 0;
+        bool havePrev = false;
 
         foreach (var item in Plugin.DataManager.GetExcelSheet<Item>())
         {
@@ -67,18 +69,33 @@ public sealed class BundleCreater
                 }
             }
             // -- End Of Filter --
+            if (havePrev && item.RowId - previousID > 1)
+            {
+                if (bundle.ItemBundle.Count > 0)
+                {
+                    bundles.Add(bundle);
+                }
+                bundle = new Bundle();
+                loopConstraint = 0;
+            }
 
-            if (loopConstraint % 5 == 0)
+            if (loopConstraint == 0)
             {
                 bundle.Identifier = item.RowId;
             }
+
             bundle.ItemBundle.Add(item);
-            if (loopConstraint % 5 == 4)
+            loopConstraint++;
+
+            if (loopConstraint == 5)
             {
                 bundles.Add(bundle);
                 bundle = new Bundle();
+                loopConstraint = 0;
             }
-            loopConstraint += 1;
+            
+            previousID = item.RowId;
+            havePrev = true;
         }
 
         if (bundle.ItemBundle.Count > 0)
