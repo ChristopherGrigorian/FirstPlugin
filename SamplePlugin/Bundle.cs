@@ -7,5 +7,7 @@ namespace SamplePlugin;
 
 public class Bundle {
     public uint Identifier;
+    public string GearSetName = "";
     public List<Item> ItemBundle = new List<Item>();
+    public string? SetImagePath;
 }

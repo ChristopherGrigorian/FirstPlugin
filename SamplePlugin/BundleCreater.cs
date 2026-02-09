@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Textures;
 using Dalamud.Plugin.Services;
 using Lumina.Excel.Sheets;
+
 
 namespace SamplePlugin;
 
@@ -15,8 +18,13 @@ public sealed class BundleCreater
 
     public List<Bundle> bundles = new List<Bundle>();
 
+    public int MinLevel { get; set; } = 1;
+    public int MaxLevel { get; set; } = 100;
+
     public void FilterBundle()
     {
+        bundles.Clear();
+
         var escSheet = Plugin.DataManager.GetExcelSheet<EquipSlotCategory>();
         var cjcSheet = Plugin.DataManager.GetExcelSheet<ClassJobCategory>();
 
@@ -27,15 +35,20 @@ public sealed class BundleCreater
         foreach (var item in Plugin.DataManager.GetExcelSheet<Item>())
         {
             // -- Filter --
-            if (item.LevelEquip != 100)
-            {
+            var lvl = (int)item.LevelEquip;
+            if (lvl < MinLevel || lvl > MaxLevel)
                 continue;
-            }
 
             if (item.FilterGroup != 4)
             {
                 continue;
             }
+
+            var name = item.Name.ToString();
+
+            if (name.StartsWith("Ornate ", StringComparison.OrdinalIgnoreCase))
+                continue;
+
 
             var escRowId = item.EquipSlotCategory.RowId;
             EquipSlotCategory? esc = null;
@@ -66,6 +79,34 @@ public sealed class BundleCreater
                 bundle = new Bundle();
             }
             loopConstraint += 1;
+        }
+
+        if (bundle.ItemBundle.Count > 0)
+        {
+            bundles.Add(bundle);
+        }
+
+        var dir = Plugin.PluginInterface.AssemblyLocation.Directory!.FullName; // same folder as goat.png
+
+        foreach (var file in Directory.GetFiles(dir, "*.jpeg"))
+        {
+            var fileName = Path.GetFileNameWithoutExtension(file); // "42992;Archeo Kingdom Set of Casting"
+            var parts = fileName.Split(';', 2);
+            if (parts.Length != 2)
+                continue;
+
+            if (!uint.TryParse(parts[0], out var id))
+                continue;
+
+            var setName = parts[1].Trim();
+
+            // find the bundle with that Identifier
+            var target = bundles.FirstOrDefault(b => b.Identifier == id);
+            if (target == null)
+                continue;
+
+            target.SetImagePath = file;
+            target.GearSetName = setName;
         }
     }
 }
