@@ -79,7 +79,7 @@ setId,setName,imageFile,itemIds
 900078,Helm of Light Set,900078;Helm of Light Set,"""2634"""
 900079,Onion Helm Set,900079;Onion Helm Set,"""2637"""
 900080,Pumpkin Set,900080;Pumpkin Set,"""2638,2639,2640,2641"""
-900081,"""","900081;""","""2643,2966"""
+900081,Reindeer Suit Set,900081;Reindeer Suit Set,"""2643,2966"""
 900082,Scarf of Wondrous Wit Set,900082;Scarf of Wondrous Wit Set,"""2649"""
 900083,Company Set,900083;Company Set,"""2650,2993"""
 900084,Monoa Mask Set,900084;Monoa Mask Set,"""2651"""
@@ -233,7 +233,7 @@ setId,setName,imageFile,itemIds
 900232,Flannel Suspenders Set,900232;Flannel Suspenders Set,"""17466,17467,17468,17469"""
 900233,Inferno Jacket Set,900233;Inferno Jacket Set,"""17470"""
 900234,Zundu Set,900234;Zundu Set,"""17486,17487,17488,17489,17618"""
-900235,Gnath Set,900235;Gnath Set,"""17490"""
+900235,"""15457,15458,17490.15459,15460,15461""","900235;""15457,15458,17490.15459,15460,15461""","""17490"""
 900236,Cherry Blossom Corsage Set,900236;Cherry Blossom Corsage Set,"""17537,17538,17539,17540,17541,17542,17543,17544,17545"""
 900237,Inspector's Eyeglasses Set,900237;Inspector's Eyeglasses Set,"""17717"""
 900238,Daisy Corsage Set,900238;Daisy Corsage Set,"""20261,20262,20263,20264,20265,20266,20267,20268,20269"""
@@ -355,5 +355,8 @@ setId,setName,imageFile,itemIds
 900354,Onion Set,900354;Onion Set,"""2956,3272,3738,3513,3957"""
 900355,Crimson Set,900355;Crimson Set,"""2957,3273,3739,3514,3958"""
 900356,Light Set,900356;Light Set,"""2955,3271,3737,3512,3956"""
-900357,,900357;,
-900358,,900358;,
+900357,Viera (Male) Set,900357;Viera (Male) Set,"""33943,33944,33945,33946"""
+900358,Viera (Female) Set,900358;Viera (Female) Set,"""25208,25209,25210,25211"""
+900359,Extreme Survival Set,900359;Extreme Survival Set,"""15476,15477"""
+900360,Craftsman's (Apron) Set,900360;Craftsman's (Apron) Set,"""30052,30053,30054"""
+900361,Mheg Deaca Set,900361;Mheg Deaca Set,"""30058,30059,30060,30061"""
