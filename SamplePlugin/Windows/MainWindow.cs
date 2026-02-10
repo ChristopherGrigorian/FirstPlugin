@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Textures;
@@ -17,6 +18,8 @@ public class MainWindow : Window, IDisposable
     private readonly string goatImagePath;
     private readonly Plugin plugin;
     private readonly Dictionary<string, ISharedImmediateTexture> setImageCache = new();
+
+    private string searchText = "";
 
 
     // We give this window a hidden ID using ##.
@@ -64,6 +67,15 @@ public class MainWindow : Window, IDisposable
         }
 
         var bc = Plugin.BundleCreater;
+
+        ImGui.Text("Search items:");
+        ImGui.SameLine();
+
+        if (ImGui.InputTextWithHint("##ItemSearch", "Search...", ref searchText, 128))
+        {
+            bc.SearchText = searchText;
+            bc.FilterBundle();
+        }
 
         int min = bc.MinLevel;
         int max = bc.MaxLevel;
@@ -145,6 +157,7 @@ public class MainWindow : Window, IDisposable
                 ImGui.Text($"{bundles.Count} bundles");
 
                 const int columns = 3;
+                int cellsListed = 0;
 
                 if (ImGui.BeginTable("BundleGrid", columns,
                     ImGuiTableFlags.SizingStretchSame |
@@ -152,14 +165,26 @@ public class MainWindow : Window, IDisposable
                 {
                     for (int idx = 0; idx < bundles.Count; ++idx)
                     {
-                        if (idx % columns == 0)
+                        var b = bundles[idx];
+
+                        // If search is active, only show bundles where ANY item name matches
+                        if (!string.IsNullOrWhiteSpace(searchText))
+                        {
+                            bool matches = b.ItemBundle.Any(item =>
+                                item.Name.ToString()
+                                    .Contains(searchText, StringComparison.OrdinalIgnoreCase));
+
+                            if (!matches)
+                                continue;
+                        }
+
+                        if (cellsListed % columns == 0)
                         {
                             ImGui.TableNextRow();
                         }
 
+                        
                         ImGui.TableNextColumn();
-
-                        var b = bundles[idx];
 
                         ImGui.PushID((int)b.Identifier);
 
@@ -180,8 +205,7 @@ public class MainWindow : Window, IDisposable
 
                         ImGui.Separator();
 
-                        int count = Math.Min(5, b.ItemBundle.Count);
-                        for (int i = 0; i < count; i++)
+                        for (int i = 0; i < b.ItemBundle.Count; i++)
                         {
                             var item = b.ItemBundle[i];
                             ImGui.PushID((int)item.RowId);
@@ -209,7 +233,7 @@ public class MainWindow : Window, IDisposable
                             
                             ImGui.SameLine();
 
-                            ImGui.TextUnformatted($"{item.Name}");
+                            ImGui.TextUnformatted($"{item.RowId} : {item.Name}");
 
                             ImGui.PopID();
                         }
@@ -256,6 +280,8 @@ public class MainWindow : Window, IDisposable
                         ImGui.EndChild();
                         ImGui.EndChild();
                         ImGui.PopID();
+
+                        cellsListed++;
                     }
 
                     ImGui.EndTable();
