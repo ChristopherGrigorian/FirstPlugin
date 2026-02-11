@@ -233,7 +233,7 @@ public class MainWindow : Window, IDisposable
                             
                             ImGui.SameLine();
 
-                            ImGui.TextUnformatted($"{item.RowId} : {item.Name}");
+                            ImGui.TextUnformatted($"{item.Name} : {item.RowId}");
 
                             ImGui.PopID();
                         }
