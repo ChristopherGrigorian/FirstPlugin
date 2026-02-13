@@ -21,6 +21,8 @@ public sealed class BundleCreater
     public string DataDir => Plugin.PluginInterface.AssemblyLocation.Directory!.FullName;
     public string ManualCsvPath => Path.Combine(DataDir, "manual_sets.csv");
     public string BanlistPath => Path.Combine(DataDir, "banlist_sets.csv");
+    public string ExportCsvPath => Path.Combine(DataDir, "exported_bundles.csv");
+
     private HashSet<uint> bannedItemIds = new();
 
     public int MinLevel { get; set; } = 1;
@@ -291,4 +293,20 @@ public sealed class BundleCreater
         return b.ItemBundle.Count == 0 ? int.MaxValue : b.ItemBundle.Min(it => (int)it.LevelEquip);
     }
 
+    public void ExportBundlesToCsv()
+    {
+        using var sw = new StreamWriter(ExportCsvPath, false);
+
+        sw.WriteLine("setId,setName,imageFile,itemIds");
+
+        foreach (var b in bundles)
+        {
+            var setId = b.Identifier;
+            var setName = b.GearSetName ?? "";
+            var imageFile = setId + ";" + setName;
+            var itemIds = string.Join(";", b.ItemBundle.Select(it => it.RowId));
+
+            sw.WriteLine($"{setId},{setName},{imageFile},{itemIds}");
+        }
+    }
 }

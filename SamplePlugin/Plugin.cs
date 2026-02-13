@@ -64,6 +64,7 @@ public sealed class Plugin : IDalamudPlugin
 
         BundleCreater = new BundleCreater(DataManager);
         BundleCreater.FilterBundle();
+        BundleCreater.ExportBundlesToCsv();
     }
 
     public void Dispose()
